@@ -1,3 +1,6 @@
+var newYorkCoords = [40.73, -74.0059];
+var mapZoomLevel = 12;
+
 // Create the tile layer that will be the background of our map
 var lightmap = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/light-v9/tiles/256/{z}/{x}/{y}?access_token={accessToken}", {
   attribution: "Map data &copy; <a href=\"http://openstreetmap.org\">OpenStreetMap</a> contributors, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"http://mapbox.com\">Mapbox</a>",
@@ -11,18 +14,22 @@ var layers = {
   COMING_SOON: new L.LayerGroup(),
   EMPTY: new L.LayerGroup(),
   LOW: new L.LayerGroup(),
+  MODERATE: new L.LayerGroup(),
   NORMAL: new L.LayerGroup(),
   OUT_OF_ORDER: new L.LayerGroup()
 };
 
 // Create the map with our layers
 var map = L.map("map-id", {
-  center: [40.73, -74.0059],
-  zoom: 12,
+  //center: [40.73, -74.0059],
+  //zoom: 12,
+  center: newYorkCoords,
+  zoom: mapZoomLevel,
   layers: [
     layers.COMING_SOON,
     layers.EMPTY,
     layers.LOW,
+    layers.MODERATE,
     layers.NORMAL,
     layers.OUT_OF_ORDER
   ]
@@ -36,6 +43,7 @@ var overlays = {
   "Coming Soon": layers.COMING_SOON,
   "Empty Stations": layers.EMPTY,
   "Low Stations": layers.LOW,
+  "Moderate Stations": layers.MODERATE,
   "Healthy Stations": layers.NORMAL,
   "Out of Order": layers.OUT_OF_ORDER
 };
@@ -82,6 +90,13 @@ var icons = {
     markerColor: "orange",
     shape: "circle"
   }),
+  //MODERATE: added by lisa
+  MODERATE: L.ExtraMarkers.icon({
+    icon: "ion-android-bicycle",
+    iconColor: "white",
+    markerColor: "pink",
+    shape: "circle"
+  }),
   NORMAL: L.ExtraMarkers.icon({
     icon: "ion-android-bicycle",
     iconColor: "white",
@@ -104,6 +119,7 @@ d3.json("https://gbfs.citibikenyc.com/gbfs/en/station_information.json", functio
       COMING_SOON: 0,
       EMPTY: 0,
       LOW: 0,
+      MODERATE: 0,
       NORMAL: 0,
       OUT_OF_ORDER: 0
     };
@@ -131,6 +147,9 @@ d3.json("https://gbfs.citibikenyc.com/gbfs/en/station_information.json", functio
       // If a station has less than 5 bikes, it's status is low
       else if (station.num_bikes_available < 5) {
         stationStatusCode = "LOW";
+      }
+      else if (station.num_bikes_available >= 5 && station.num_bikes_available < 10) {
+        stationStatusCode = "MODERATE";
       }
       // Otherwise the station is normal
       else {
@@ -164,6 +183,7 @@ function updateLegend(time, stationCount) {
     "<p class='coming-soon'>Stations Coming Soon: " + stationCount.COMING_SOON + "</p>",
     "<p class='empty'>Empty Stations: " + stationCount.EMPTY + "</p>",
     "<p class='low'>Low Stations: " + stationCount.LOW + "</p>",
+    "<p class='moderate'>Moderate Stations: " + stationCount.MODERATE + "</p>",
     "<p class='healthy'>Healthy Stations: " + stationCount.NORMAL + "</p>"
   ].join("");
 }
