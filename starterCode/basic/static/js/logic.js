@@ -1,8 +1,7 @@
-//var newYorkCoords = [40.73, -74.0059];
-// var mapZoomLevel = 12;
+var newYorkCoords = [40.73, -74.0059];
+var mapZoomLevel = 12;
 
-
-function createMap(bikeStations) {
+ function createMap(bikeStations) {
 
   // Create the tile layer that will be the background of our map
   var lightmap = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/light-v9/tiles/256/{z}/{x}/{y}?access_token={accessToken}", {
@@ -11,10 +10,19 @@ function createMap(bikeStations) {
     id: "mapbox.light",
     accessToken: API_KEY
   });
+  
+  // reate the tile layer that will be the background of our map
+  var darkmap = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
+  attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
+  maxZoom: 18,
+  id: "mapbox.dark",
+  accessToken: API_KEY
+});
 
   // Create a baseMaps object to hold the lightmap layer
   var baseMaps = {
-    "Light Map": lightmap
+    "Light Map": lightmap,
+    "Dark Map": darkmap
   };
 
   // Create an overlayMaps object to hold the bikeStations layer
@@ -24,8 +32,10 @@ function createMap(bikeStations) {
 
   // Create the map object with options
   var map = L.map("map-id", {
-    center: [40.73, -74.0059],
-    zoom: 12,
+    //center: [40.73, -74.0059],
+    //zoom: 12,
+    center: newYorkCoords,
+    zoom: mapZoomLevel,
     layers: [lightmap, bikeStations]
   });
 
